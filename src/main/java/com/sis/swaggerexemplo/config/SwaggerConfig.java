@@ -12,7 +12,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI().info(new Info().title("Swagger Exemplo API").version("1.0.0")
-                .license(new License().name("Licença do Sistema").url("www.google.com"))
+                .license(new License().name("Licença do Sistema").url("https://github.com/LcsMont/SwaggerExemplo"))
         );
     }
 }
