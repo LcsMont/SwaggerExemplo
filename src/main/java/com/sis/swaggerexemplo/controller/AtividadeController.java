@@ -3,6 +3,7 @@ package com.sis.swaggerexemplo.controller;
 import com.sis.swaggerexemplo.model.Atividade;
 import com.sis.swaggerexemplo.repository.AtividadeRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +17,34 @@ public class AtividadeController {
     @Autowired
     private AtividadeRepository atividadeRepository;
 
-    @Operation(summary = "Listar", description = "Método que retorna todos os dados", tags = "Atividades")
+    @Operation(
+            summary = "Listar",
+            description = "Método que retorna todos os dados",
+            tags = "Atividades",
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Atividades listadas"),
+                @ApiResponse(responseCode = "400", description = "Bad request"),
+                @ApiResponse(responseCode = "404", description = "Atividades não encontradas"),
+                @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+            }
+    )
     @GetMapping
-    public List<Atividade> listar() {
-        return atividadeRepository.findAll();
+    public ResponseEntity<List<Atividade>> listar() {
+        List<Atividade> list = atividadeRepository.findAll();
+        return ResponseEntity.ok().body(list);
     }
 
-    @Operation(summary = "Listar por Id", description = "Método que retorna um registro", tags = "Atividades")
+    @Operation(
+            summary = "Listar por Id",
+            description = "Método que retorna um registro",
+            tags = "Atividades",
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Atividade listada"),
+                @ApiResponse(responseCode = "400", description = "Bad request"),
+                @ApiResponse(responseCode = "404", description = "Atividade não encontrada"),
+                @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+            }
+    )
     @GetMapping("/{id}")
     public ResponseEntity<Atividade> listarPorId(@PathVariable int id) {
         return atividadeRepository.findById(id)
@@ -30,13 +52,33 @@ public class AtividadeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Salvar", description = "Método que salva um registro", tags = "Atividades")
+    @Operation(
+            summary = "Salvar",
+            description = "Método que salva um registro",
+            tags = "Atividades",
+            responses = {
+                @ApiResponse(responseCode = "201", description = "Atividade criada"),
+                @ApiResponse(responseCode = "400", description = "Bad request"),
+                @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+            }
+    )
     @PostMapping
-    public Atividade criar(@RequestBody Atividade atividade) {
-        return atividadeRepository.save(atividade);
+    public ResponseEntity<Atividade> criar(@RequestBody Atividade atividade) {
+        Atividade atv = atividadeRepository.save(atividade);
+        return ResponseEntity.status(201).body(atv);
     }
 
-    @Operation(summary = "Alterar", description = "Método que altera um registro", tags = "Atividades")
+    @Operation(
+            summary = "Alterar",
+            description = "Método que altera um registro",
+            tags = "Atividades",
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Atividade atualizada com sucesso"),
+                @ApiResponse(responseCode = "404", description = "Atividade não encontrada"),
+                @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+                @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+            }
+    )
     @PutMapping("/{id}")
     public ResponseEntity<Atividade> atualizar(@PathVariable int id, @RequestBody Atividade atividadeAtualizada) {
         return atividadeRepository.findById(id)
@@ -50,13 +92,22 @@ public class AtividadeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Deletar", description = "Método que apaga um registro", tags = "Atividades")
+    @Operation(
+            summary = "Deletar",
+            description = "Método que apaga um registro",
+            tags = "Atividades",
+            responses = {
+                @ApiResponse(responseCode = "204", description = "Atividade deletada com sucesso"),
+                @ApiResponse(responseCode = "404", description = "Atividade não encontrada"),
+                @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+            }
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable int id) {
         if (atividadeRepository.existsById(id)) {
             atividadeRepository.deleteById(id);
-            return ResponseEntity.noContent().build(); // 204 No Content
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build(); // 404 Not Found
+        return ResponseEntity.notFound().build();
     }
 }
